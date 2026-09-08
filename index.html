@@ -88,11 +88,25 @@
         grid-template-rows: auto 0 minmax(0, 1fr);
       }
       .app.collapsed #map { height: 0 !important; overflow: hidden; border: 0; }
-      #map { height: 34dvh !important; border-right: 0; border-bottom: 1px solid var(--line); transition: height 0.2s ease; }
-      .side { height: auto; min-height: 0; }
-      .side-top { padding: 10px 12px 8px; }
+      #map { height: 34dvh !important; border-right: 0; border-bottom: 1px solid var(--line); transition: height 0.2s ease; touch-action: none; }
+      .side {
+        height: auto;
+        min-height: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .side-top { padding: 10px 12px 8px; flex: 0 0 auto; }
       .side-head, .side-top p { display: none; }
-      .sheet { padding: 10px 12px calc(16px + env(safe-area-inset-bottom)); }
+      .sheet {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        padding: 10px 12px calc(20px + env(safe-area-inset-bottom));
+      }
       button, input, select { min-height: 42px; font-size: 16px; }
     }
   </style>

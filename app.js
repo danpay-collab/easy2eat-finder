@@ -196,7 +196,9 @@ function drawList(list) {
         <div class="meta">${line1}${line2 ? "<br>" + line2 : ""}</div>
         <div class="meta hours ${cls}">${t("hoursToday")} ${p.hours.open}–${p.hours.close} · ${status}</div>
         <div class="actions">
-          <button class="${btn}" onclick="openSite('${p.website}')">${label}</button>
+          ${p.canOrder
+            ? `<button class="open-btn" onclick="openSite('${p.website}')">${label}</button>`
+            : `<button class="closed-btn" disabled>${label}</button>`}
           ${p.phone ? `<button onclick="callNow('${p.phone}')">${t("call")}</button>` : ""}
           <button class="ghost" onclick="focusPlace(${p.lat}, ${p.lng})">${t("show")}</button>
         </div>

@@ -88,6 +88,8 @@ function editPlace(id) {
   document.getElementById("website").value = p.website || "";
   document.getElementById("hoursOpen").value = p.hoursOpen || "15:00";
   document.getElementById("hoursClose").value = p.hoursClose || "21:00";
+  const stillNew = p.createdAt && Date.now() - Number(p.createdAt) < 30 * 24 * 60 * 60 * 1000;
+  document.getElementById("markNew").checked = !!stillNew;
   document.getElementById("saveBtn").textContent = "Gem ændringer";
   document.getElementById("cancelEdit").style.display = "";
   document.getElementById("status").textContent = "Retter: " + p.name;
@@ -101,6 +103,7 @@ function clearEdit() {
   document.getElementById("form").reset();
   document.getElementById("hoursOpen").value = "15:00";
   document.getElementById("hoursClose").value = "21:00";
+  document.getElementById("markNew").checked = true;
 }
 
 function delPlace(id) {
@@ -170,7 +173,11 @@ document.getElementById("form").addEventListener("submit", async (e) => {
       hoursOpen,
       hoursClose,
       delivery: existing ? !!existing.delivery : false,
-      createdAt: existing && existing.createdAt ? existing.createdAt : Date.now(),
+      createdAt: document.getElementById("markNew").checked
+        ? existing && existing.createdAt && Date.now() - Number(existing.createdAt) < 30 * 24 * 60 * 60 * 1000
+          ? existing.createdAt
+          : Date.now()
+        : undefined,
       lat,
       lng,
       active: existing ? existing.active !== false : true,

@@ -30,22 +30,35 @@ function nowInDk() {
     hour12: false,
   }).formatToParts(new Date());
   const get = (t) => parts.find((p) => p.type === t)?.value;
-  const hhmm = get("hour") + ":" + get("minute");
-  return { hhmm, weekday: get("weekday") };
+  const map = { Sun: "0", Mon: "1", Tue: "2", Wed: "3", Thu: "4", Fri: "5", Sat: "6" };
+  return { hhmm: get("hour") + ":" + get("minute"), dayKey: map[get("weekday")] || "1" };
 }
 
-function placeHours(p) {
+function todaySlot(p) {
+  const { dayKey } = nowInDk();
+  if (p.week && p.week[dayKey]) return p.week[dayKey];
   return {
-    open: p.open || p.hoursOpen || DEFAULT_HOURS.open,
-    close: p.close || p.hoursClose || DEFAULT_HOURS.close,
+    open: true,
+    from: p.hoursOpen || DEFAULT_HOURS.open,
+    to: p.hoursClose || DEFAULT_HOURS.close,
+    delivery: !!p.delivery,
   };
 }
 
+function placeHours(p) {
+  const d = todaySlot(p);
+  if (!d.open) return { open: "–", close: "–", closedDay: true };
+  return { open: d.from || DEFAULT_HOURS.open, close: d.to || DEFAULT_HOURS.close, closedDay: false };
+}
+
 function isOpenNow(p) {
-  const { open, close } = placeHours(p);
+  const d = todaySlot(p);
+  if (!d.open) return false;
   const { hhmm } = nowInDk();
-  if (open < close) return hhmm >= open && hhmm < close;
-  return hhmm >= open || hhmm < close;
+  const from = d.from || DEFAULT_HOURS.open;
+  const to = d.to || DEFAULT_HOURS.close;
+  if (from < to) return hhmm >= from && hhmm < to;
+  return hhmm >= from || hhmm < to;
 }
 
 function usedDistricts() {
@@ -93,7 +106,7 @@ function render() {
     region: guessRegion(p),
     openNow: isOpenNow(p),
     hours: placeHours(p),
-    canOrder: isOpenNow(p) || !!p.delivery,
+    canOrder: isOpenNow(p) || !!todaySlot(p).delivery,
   }));
   if (currentDistrict !== "Alle") {
     list = list.filter((p) => p.region === currentDistrict);
@@ -119,7 +132,7 @@ function render() {
 
   markersLayer.clearLayers();
   list.forEach((p) => {
-    const color = p.openNow ? "#16a34a" : p.delivery ? "#f59e0b" : "#e11d48";
+    const color = p.openNow ? "#16a34a" : todaySlot(p).delivery ? "#f59e0b" : "#e11d48";
     const fresh = isNewPlace(p);
     const m = fresh
       ? L.marker([p.lat, p.lng], {
@@ -169,15 +182,18 @@ function drawList(list) {
       const km = p.km != null ? `<span class="badge">${p.km.toFixed(1)} km</span>` : "";
       const cls = p.openNow ? "open" : "closed";
       const btn = p.canOrder ? "open-btn" : "closed-btn";
-      const label = p.openNow ? t("orderOpen") : p.delivery ? t("preorder") : t("orderClosed");
+      const delToday = !!todaySlot(p).delivery;
+      const label = p.openNow ? t("orderOpen") : delToday ? t("preorder") : t("orderClosed");
       const status = p.openNow
         ? t("nowOpen")
-        : p.delivery
+        : delToday
         ? t("nowClosed") + " · " + t("preorder")
         : t("nowClosed");
+      const line1 = p.street || p.address || "";
+      const line2 = [p.zip, p.city].filter(Boolean).join(" ");
       return `<article class="card">
         <h3>${p.name} ${isNewPlace(p) ? `<span class="ny-badge">${t("ny")}</span>` : ""} ${km}</h3>
-        <div class="meta">${p.address}</div>
+        <div class="meta">${line1}${line2 ? "<br>" + line2 : ""}</div>
         <div class="meta hours ${cls}">${t("hoursToday")} ${p.hours.open}–${p.hours.close} · ${status}</div>
         <div class="actions">
           <button class="${btn}" onclick="openSite('${p.website}')">${label}</button>

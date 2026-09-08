@@ -12,6 +12,56 @@ const DISTRICTS = [
 
 let currentDistrict = "Alle";
 
+const WEEKDAYS = [
+  { k: "1", n: "Man" },
+  { k: "2", n: "Tir" },
+  { k: "3", n: "Ons" },
+  { k: "4", n: "Tor" },
+  { k: "5", n: "Fre" },
+  { k: "6", n: "Lør" },
+  { k: "0", n: "Søn" },
+];
+
+function defaultWeek() {
+  const w = {};
+  WEEKDAYS.forEach(({ k }) => {
+    w[k] = { open: true, from: "15:00", to: "21:00", delivery: false, dfrom: "16:00", dto: "21:00" };
+  });
+  return w;
+}
+
+function drawWeek(week) {
+  const w = week || defaultWeek();
+  const el = document.getElementById("weekHours");
+  if (!el) return;
+  el.innerHTML =
+    `<table><thead><tr><th></th><th>Åben</th><th>Fra</th><th>Til</th><th>Udbr.</th><th>Fra</th><th>Til</th></tr></thead><tbody>` +
+    WEEKDAYS.map(({ k, n }) => {
+      const d = w[k] || defaultWeek()[k];
+      return `<tr>
+        <td>${n}</td>
+        <td><input type="checkbox" data-w="${k}" data-f="open" ${d.open ? "checked" : ""}></td>
+        <td><input type="time" data-w="${k}" data-f="from" value="${d.from || "15:00"}"></td>
+        <td><input type="time" data-w="${k}" data-f="to" value="${d.to || "21:00"}"></td>
+        <td><input type="checkbox" data-w="${k}" data-f="delivery" ${d.delivery ? "checked" : ""}></td>
+        <td><input type="time" data-w="${k}" data-f="dfrom" value="${d.dfrom || "16:00"}"></td>
+        <td><input type="time" data-w="${k}" data-f="dto" value="${d.dto || "21:00"}"></td>
+      </tr>`;
+    }).join("") +
+    `</tbody></table>`;
+}
+
+function readWeek() {
+  const w = defaultWeek();
+  document.querySelectorAll("#weekHours [data-w]").forEach((inp) => {
+    const k = inp.getAttribute("data-w");
+    const f = inp.getAttribute("data-f");
+    if (inp.type === "checkbox") w[k][f] = inp.checked;
+    else w[k][f] = inp.value;
+  });
+  return w;
+}
+
 function uid() {
   return "p-" + Math.random().toString(36).slice(2, 9);
 }
@@ -81,13 +131,13 @@ function editPlace(id) {
   if (!p) return;
   document.getElementById("editId").value = p.id;
   document.getElementById("name").value = p.name || "";
-  document.getElementById("address").value = p.address || "";
+  document.getElementById("address").value = p.street || p.address || "";
+  document.getElementById("zip").value = p.zip || "";
   document.getElementById("city").value = p.city || "";
   document.getElementById("region").value = p.region || guessRegion(p) || "";
   document.getElementById("phone").value = p.phone || "";
   document.getElementById("website").value = p.website || "";
-  document.getElementById("hoursOpen").value = p.hoursOpen || "15:00";
-  document.getElementById("hoursClose").value = p.hoursClose || "21:00";
+  drawWeek(p.week || defaultWeek());
   const stillNew = p.createdAt && Date.now() - Number(p.createdAt) < 30 * 24 * 60 * 60 * 1000;
   document.getElementById("markNew").checked = !!stillNew;
   document.getElementById("saveBtn").textContent = "Gem ændringer";
@@ -101,9 +151,8 @@ function clearEdit() {
   document.getElementById("saveBtn").textContent = "Gem nyt sted";
   document.getElementById("cancelEdit").style.display = "none";
   document.getElementById("form").reset();
-  document.getElementById("hoursOpen").value = "15:00";
-  document.getElementById("hoursClose").value = "21:00";
   document.getElementById("markNew").checked = true;
+  drawWeek();
 }
 
 function delPlace(id) {
@@ -115,7 +164,7 @@ function delPlace(id) {
 async function geocode(address) {
   const url =
     "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" +
-    encodeURIComponent(address + ", Danmark");
+    encodeURIComponent(address + ", Danmark"); // patched below
   const res = await fetch(url, { headers: { "Accept-Language": "da" } });
   const data = await res.json();
   if (!data[0]) throw new Error("Adresse ikke fundet");
@@ -142,13 +191,15 @@ function parseWorkbook(wb) {
 document.getElementById("form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const name = document.getElementById("name").value.trim();
-  const address = document.getElementById("address").value.trim();
+  const street = document.getElementById("address").value.trim();
+  const zip = document.getElementById("zip").value.trim();
   const city = document.getElementById("city").value.trim();
+  const address = street + ", " + zip + " " + city;
   const region = document.getElementById("region").value.trim();
   const phone = document.getElementById("phone").value.trim();
   const website = document.getElementById("website").value.trim();
-  const hoursOpen = document.getElementById("hoursOpen").value || "15:00";
-  const hoursClose = document.getElementById("hoursClose").value || "21:00";
+  const week = readWeek();
+  const anyDel = Object.values(week).some((d) => d.delivery);
   const editId = document.getElementById("editId").value;
   const status = document.getElementById("status");
   status.textContent = "Gemmer…";
@@ -157,7 +208,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     let lat = existing && existing.lat;
     let lng = existing && existing.lng;
     if (!existing || existing.address !== address) {
-      const g = await geocode(address);
+      const g = await geocode(street + " " + zip + " " + city);
       lat = g.lat;
       lng = g.lng;
     }
@@ -165,14 +216,15 @@ document.getElementById("form").addEventListener("submit", async (e) => {
       ...(existing || {}),
       id: editId || uid(),
       name,
+      street,
+      zip,
       address,
       city,
       region,
       phone,
       website,
-      hoursOpen,
-      hoursClose,
-      delivery: existing ? !!existing.delivery : false,
+      week,
+      delivery: anyDel,
       createdAt: document.getElementById("markNew").checked
         ? existing && existing.createdAt && Date.now() - Number(existing.createdAt) < 30 * 24 * 60 * 60 * 1000
           ? existing.createdAt
@@ -270,4 +322,5 @@ document.getElementById("reset").addEventListener("click", () => {
 document.getElementById("q").addEventListener("input", drawTable);
 
 drawDistricts();
+drawWeek();
 drawTable();

@@ -48,8 +48,11 @@
 
       <form id="form" class="form">
         <input id="name" required placeholder="Navn" />
-        <input id="address" required placeholder="Adresse + postnr" />
-        <input id="city" required placeholder="By" />
+        <input id="address" required placeholder="Vej og nr" />
+        <div class="row">
+          <input id="zip" required placeholder="Postnr" maxlength="4" style="width:90px;flex:0 0 90px" />
+          <input id="city" required placeholder="By" />
+        </div>
         <select id="region">
           <option value="">Vælg distrikt (valgfrit)</option>
           <option>Nordjylland</option>
@@ -64,10 +67,7 @@
         <input id="phone" placeholder="Telefon" />
         <input id="website" required type="url" placeholder="https:// hjemmeside" />
         <input type="hidden" id="editId" />
-        <div class="row">
-          <label class="hint">Åbner <input id="hoursOpen" value="15:00" type="time" /></label>
-          <label class="hint">Lukker <input id="hoursClose" value="21:00" type="time" /></label>
-        </div>
+        <div id="weekHours" class="week-hours"></div>
         <label class="hint"><input type="checkbox" id="markNew" checked /> Vis som NY i 30 dage</label>
         <button class="primary" type="submit" id="saveBtn">Gem nyt sted</button>
         <button type="button" class="ghost" id="cancelEdit" style="display:none">Annuller redigering</button>

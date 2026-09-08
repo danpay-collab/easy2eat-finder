@@ -68,3 +68,7 @@ table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th, td { border-bottom: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
 .form { display: grid; gap: 8px; margin: 14px 0 22px; }
 .hint { color: var(--muted); font-size: 13px; line-height: 1.45; }
+.week-hours { font-size: 12px; border: 1px solid var(--line); border-radius: 10px; overflow: auto; }
+.week-hours table { width: 100%; }
+.week-hours th, .week-hours td { padding: 4px 6px; border-bottom: 1px solid var(--line); }
+.week-hours input[type="time"] { padding: 4px; font-size: 12px; }

@@ -42,13 +42,22 @@ function isOpenNow(p) {
   return hhmm >= open || hhmm < close;
 }
 
+function usedDistricts() {
+  const have = new Set(activePlaces().map((p) => guessRegion(p)).filter(Boolean));
+  const list = DISTRICTS.filter((d) => d === "Alle" || have.has(d));
+  if (currentDistrict !== "Alle" && !have.has(currentDistrict)) currentDistrict = "Alle";
+  return list;
+}
+
 function drawDistricts() {
   const box = document.getElementById("districts");
   if (!box) return;
-  box.innerHTML = DISTRICTS.map((d) => {
-    const on = d === currentDistrict ? "on" : "";
-    return `<button type="button" class="${on}" data-d="${d}">${d}</button>`;
-  }).join("");
+  box.innerHTML = usedDistricts()
+    .map((d) => {
+      const on = d === currentDistrict ? "on" : "";
+      return `<button type="button" class="${on}" data-d="${d}">${d}</button>`;
+    })
+    .join("");
   box.querySelectorAll("button").forEach((b) => {
     b.onclick = () => {
       currentDistrict = b.getAttribute("data-d");

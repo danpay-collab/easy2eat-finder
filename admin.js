@@ -215,16 +215,31 @@ function parseWorkbook(wb) {
   });
 }
 
+function setFetchBtn(state, label) {
+  const btn = document.getElementById("fetchInfo");
+  if (!btn) return;
+  btn.textContent = label;
+  btn.style.background = state === "ok" ? "#16a34a" : state === "err" ? "#e11d48" : state === "wait" ? "#d97706" : "#2563eb";
+  btn.style.borderColor = btn.style.background;
+  btn.style.color = "#fff";
+}
+
 async function loadHtml(url) {
+  const bare = url.replace(/^https?:\/\//, "");
   const tries = [
-    url,
-    "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
-    "https://corsproxy.io/?" + encodeURIComponent(url),
+    { u: "https://r.jina.ai/http://" + bare, json: false },
+    { u: "https://r.jina.ai/https://" + bare, json: false },
+    { u: "https://api.allorigins.win/get?url=" + encodeURIComponent(url), json: true },
+    { u: url, json: false },
   ];
-  for (const u of tries) {
+  for (const t of tries) {
     try {
-      const res = await fetch(u);
-      if (res.ok) {
+      const res = await fetch(t.u);
+      if (!res.ok) continue;
+      if (t.json) {
+        const data = await res.json();
+        if (data && data.contents && data.contents.length > 200) return data.contents;
+      } else {
         const html = await res.text();
         if (html && html.length > 200) return html;
       }
@@ -292,8 +307,10 @@ document.getElementById("fetchInfo").addEventListener("click", async () => {
   const status = document.getElementById("status");
   if (!website) {
     status.textContent = "Skriv hjemmesiden først.";
+    setFetchBtn("err", "Mangler hjemmeside");
     return;
   }
+  setFetchBtn("wait", "Henter…");
   status.textContent = "Henter infosiden…";
   try {
     const base = website.replace(/\/$/, "");
@@ -309,10 +326,12 @@ document.getElementById("fetchInfo").addEventListener("click", async () => {
     if (info.city) document.getElementById("city").value = info.city;
     if (info.phone) document.getElementById("phone").value = info.phone;
     drawWeek(info.week);
+    setFetchBtn("ok", "Hentet");
     status.textContent = info.hasDel
       ? "Hentet. Der er udbringning – tjek tiderne og gem."
       : "Hentet. Ingen udbringning fundet – tjek tiderne og gem.";
   } catch (err) {
+    setFetchBtn("err", "Ikke hentet");
     status.textContent = "Kunne ikke læse siden (blokering eller lukket side). Udfyld selv.";
   }
 });

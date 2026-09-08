@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="styles.css" />
   <style>
     html, body { height: 100%; height: 100vh; overflow: hidden; }
+    .topbar { display: none; }
     .app {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 460px;
@@ -69,21 +70,49 @@
       html, body { overflow: hidden; height: 100dvh; }
       .app {
         grid-template-columns: 1fr;
-        grid-template-rows: 38dvh minmax(0, 1fr);
+        grid-template-rows: auto 34dvh minmax(0, 1fr);
         height: 100dvh;
       }
-      #map { height: 38dvh !important; border-right: 0; border-bottom: 1px solid var(--line); }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        padding-top: max(8px, env(safe-area-inset-top));
+        background: #12161e;
+        border-bottom: 1px solid var(--line);
+        z-index: 2;
+      }
+      .topbar h1 { margin: 0; font-size: 17px; }
+      .app.collapsed {
+        grid-template-rows: auto 0 minmax(0, 1fr);
+      }
+      .app.collapsed #map { height: 0 !important; overflow: hidden; border: 0; }
+      #map { height: 34dvh !important; border-right: 0; border-bottom: 1px solid var(--line); transition: height 0.2s ease; }
       .side { height: auto; min-height: 0; }
-      .side-top { padding: 12px 14px 10px; padding-top: max(12px, env(safe-area-inset-top)); }
-      .side-top h1 { font-size: 18px; }
-      .side-top p { display: none; }
+      .side-top { padding: 10px 12px 8px; }
+      .side-head, .side-top p { display: none; }
       .sheet { padding: 10px 12px calc(16px + env(safe-area-inset-bottom)); }
       button, input, select { min-height: 42px; font-size: 16px; }
     }
   </style>
 </head>
 <body>
-  <div class="app">
+  <div class="app" id="app">
+    <div class="topbar">
+      <h1 data-i18n="title">Easy2Eat Finder</h1>
+      <div class="lang-switch">
+        <button type="button" class="lang-btn" data-lang="da" title="Dansk">
+          <svg viewBox="0 0 32 22" aria-hidden="true"><rect width="32" height="22" fill="#c8102e"/><rect x="10" width="4" height="22" fill="#fff"/><rect y="9" width="32" height="4" fill="#fff"/></svg>
+        </button>
+        <button type="button" class="lang-btn" data-lang="en" title="English">
+          <svg viewBox="0 0 32 22" aria-hidden="true"><rect width="32" height="22" fill="#012169"/><path d="M0 0 L32 22 M32 0 L0 22" stroke="#fff" stroke-width="4"/><path d="M0 0 L32 22 M32 0 L0 22" stroke="#c8102e" stroke-width="2"/><rect x="13" width="6" height="22" fill="#fff"/><rect y="8" width="32" height="6" fill="#fff"/><rect x="14" width="4" height="22" fill="#c8102e"/><rect y="9" width="32" height="4" fill="#c8102e"/></svg>
+        </button>
+        <button type="button" class="lang-btn" data-lang="de" title="Deutsch">
+          <svg viewBox="0 0 32 22" aria-hidden="true"><rect width="32" height="7.3" fill="#000"/><rect y="7.3" width="32" height="7.4" fill="#dd0000"/><rect y="14.7" width="32" height="7.3" fill="#ffce00"/></svg>
+        </button>
+      </div>
+    </div>
     <div id="map">
       <div id="mapError" class="map-error"></div>
     </div>

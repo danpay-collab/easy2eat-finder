@@ -219,3 +219,18 @@ document.getElementById("locate").addEventListener("click", locateMe);
 
 initMap();
 setInterval(render, 60000);
+
+(function () {
+  const list = document.getElementById("list");
+  const app = document.getElementById("app");
+  if (!list || !app) return;
+  list.addEventListener(
+    "scroll",
+    () => {
+      app.classList.toggle("collapsed", list.scrollTop > 24);
+      if (window.map) setTimeout(() => map.invalidateSize(), 220);
+    },
+    { passive: true }
+  );
+})();
+

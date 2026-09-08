@@ -149,6 +149,8 @@
             <option value="50">50 km</option>
           </select>
           <button id="locate" class="blue" data-i18n="locate">Min position</button>
+          <button id="installBtn" class="blue" data-i18n="addHome" style="display:none">Læg på startskærm</button>
+          <p id="iosHint" class="hint" data-i18n="iosHint" style="display:none;margin:6px 0 0"></p>
         </div>
       </div>
       <section class="sheet" id="list"></section>
@@ -164,6 +166,33 @@
       b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
     });
     applyLang();
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    }
+    (function () {
+      var deferred = null;
+      var btn = document.getElementById("installBtn");
+      var hint = document.getElementById("iosHint");
+      var standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+      var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      if (standalone) return;
+      if (ios && hint) hint.style.display = "block";
+      window.addEventListener("beforeinstallprompt", function (e) {
+        e.preventDefault();
+        deferred = e;
+        if (btn) btn.style.display = "";
+      });
+      if (btn) {
+        btn.addEventListener("click", function () {
+          if (!deferred) return;
+          deferred.prompt();
+          deferred.userChoice.finally(function () {
+            deferred = null;
+            btn.style.display = "none";
+          });
+        });
+      }
+    })();
     setTimeout(function () {
       if (window.map) map.invalidateSize();
       if (typeof L === "undefined") {

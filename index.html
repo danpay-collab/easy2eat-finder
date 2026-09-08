@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#e11d48" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Easy2Eat Finder</title>
+  <link rel="stylesheet" href="leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    html, body { height: 100%; height: 100vh; overflow: hidden; }
+    .app {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 460px;
+      grid-template-rows: 100vh;
+      height: 100vh;
+      width: 100%;
+    }
+    .app > header { display: none; }
+    #map {
+      height: 100vh !important;
+      width: 100%;
+      background: #d7dee5;
+      border-right: 1px solid var(--line);
+    }
+    .side {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: #12161e;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .side-top {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid var(--line);
+      flex: 0 0 auto;
+    }
+    .side-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+    .side-top h1 { margin: 0; font-size: 22px; }
+    .side-top p { margin: 0 0 14px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .side-top .row { margin-bottom: 8px; }
+    .side-top input, .side-top select { flex: 1; min-width: 0; }
+    .sheet {
+      flex: 1;
+      max-height: none;
+      overflow: auto;
+      border-top: 0;
+      padding: 12px 16px 20px;
+    }
+    .lang-switch { display: flex; gap: 8px; flex-shrink: 0; }
+    .lang-btn {
+      width: 42px; height: 28px; padding: 2px; opacity: 0.5;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .lang-btn svg { width: 32px; height: 22px; display: block; border-radius: 3px; }
+    .lang-btn.on { opacity: 1; outline: 2px solid var(--accent); }
+    .map-error {
+      position: absolute; left: 16px; top: 16px; z-index: 500;
+      background: #fff3cd; color: #422006; padding: 10px 12px;
+      border-radius: 8px; max-width: 360px; font-size: 13px;
+      display: none;
+    }
+    @media (max-width: 800px) {
+      html, body { overflow: hidden; height: 100dvh; }
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 38dvh minmax(0, 1fr);
+        height: 100dvh;
+      }
+      #map { height: 38dvh !important; border-right: 0; border-bottom: 1px solid var(--line); }
+      .side { height: auto; min-height: 0; }
+      .side-top { padding: 12px 14px 10px; padding-top: max(12px, env(safe-area-inset-top)); }
+      .side-top h1 { font-size: 18px; }
+      .side-top p { display: none; }
+      .sheet { padding: 10px 12px calc(16px + env(safe-area-inset-bottom)); }
+      button, input, select { min-height: 42px; font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div id="map">
+      <div id="mapError" class="map-error"></div>
+    </div>
+    <aside class="side">
+      <div class="side-top">
+        <div class="side-head">
+          <h1 data-i18n="title">Easy2Eat Finder</h1>
+          <div class="lang-switch">
+            <button type="button" class="lang-btn" data-lang="da" title="Dansk">
+              <svg viewBox="0 0 32 22" aria-hidden="true"><rect width="32" height="22" fill="#c8102e"/><rect x="10" width="4" height="22" fill="#fff"/><rect y="9" width="32" height="4" fill="#fff"/></svg>
+            </button>
+            <button type="button" class="lang-btn" data-lang="en" title="English">
+              <svg viewBox="0 0 32 22" aria-hidden="true"><rect width="32" height="22" fill="#012169"/><path d="M0 0 L32 22 M32 0 L0 22" stroke="#fff" stroke-width="4"/><path d="M0 0 L32 22 M32 0 L0 22" stroke="#c8102e" stroke-width="2"/><rect x="13" width="6" height="22" fill="#fff"/><rect y="8" width="32" height="6" fill="#fff"/><rect x="14" width="4" height="22" fill="#c8102e"/><rect y="9" width="32" height="4" fill="#c8102e"/></svg>
+            </button>
+            <button type="button" class="lang-btn" data-lang="de" title="Deutsch">
+              <svg viewBox="0 0 32 22" aria-hidden="true"><rect width="32" height="7.3" fill="#000"/><rect y="7.3" width="32" height="7.4" fill="#dd0000"/><rect y="14.7" width="32" height="7.3" fill="#ffce00"/></svg>
+            </button>
+          </div>
+        </div>
+        <p data-i18n="intro">
+          Find pizzerier der kører på Easy2Eat. Søg en by, eller brug din position.
+          Tryk Åbn / bestil for at gå direkte til hjemmesiden.
+        </p>
+        <div class="row">
+          <input id="q" data-i18n-placeholder="search" placeholder="Søg by, navn eller adresse" />
+        </div>
+        <div class="districts" id="districts"></div>
+        <div class="row">
+          <select id="radius">
+            <option value="0" selected>Hele landet</option>
+            <option value="5">5 km</option>
+            <option value="10">10 km</option>
+            <option value="25">25 km</option>
+            <option value="50">50 km</option>
+          </select>
+          <button id="locate" class="blue" data-i18n="locate">Min position</button>
+        </div>
+      </div>
+      <section class="sheet" id="list"></section>
+    </aside>
+  </div>
+  <script src="leaflet.js"></script>
+  <script src="i18n.js"></script>
+  <script src="seed.js"></script>
+  <script src="store.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.querySelectorAll(".lang-btn").forEach(function (b) {
+      b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
+    });
+    applyLang();
+    setTimeout(function () {
+      if (window.map) map.invalidateSize();
+      if (typeof L === "undefined") {
+        var el = document.getElementById("mapError");
+        el.style.display = "block";
+        el.textContent = "Kortet kunne ikke starte. Pak hele mappen ud et fast sted (ikke Temp) og åbn index.html derfra. Du skal have internet for at se kortfliserne.";
+      }
+    }, 300);
+  </script>
+</body>
+</html>

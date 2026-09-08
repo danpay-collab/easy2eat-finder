@@ -1,0 +1,52 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171b22;
+  --line: #2a3140;
+  --text: #f4f6fb;
+  --muted: #9aa3b5;
+  --accent: #e11d48;
+  --ok: #22c55e;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); }
+header {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 14px; border-bottom: 1px solid var(--line); background: #12151b;
+}
+header h1 { font-size: 16px; margin: 0; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+input, select, button, textarea {
+  background: #10141b; color: var(--text); border: 1px solid var(--line);
+  border-radius: 10px; padding: 8px 10px; font-size: 14px;
+}
+button { cursor: pointer; }
+button.primary { background: var(--accent); border-color: var(--accent); font-weight: 600; }
+button.blue { background: #2563eb; border-color: #2563eb; font-weight: 600; color: #fff; }
+button.open-btn { background: #16a34a; border-color: #16a34a; font-weight: 600; color: #fff; }
+button.closed-btn { background: #e11d48; border-color: #e11d48; font-weight: 600; color: #fff; }
+.hours.open { color: #4ade80; }
+.hours.closed { color: #fb7185; }
+.districts { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+.districts button { font-size: 12px; padding: 6px 10px; }
+.districts button.on { background: #2563eb; border-color: #2563eb; color: #fff; }
+button.ghost { background: transparent; }
+a { color: #93c5fd; }
+.app { display: grid; grid-template-rows: auto 1fr auto; height: 100%; }
+#map { height: 100%; min-height: 280px; }
+.sheet {
+  max-height: 42vh; overflow: auto; background: var(--panel);
+  border-top: 1px solid var(--line); padding: 10px 12px 16px;
+}
+.card {
+  border: 1px solid var(--line); border-radius: 12px; padding: 10px;
+  margin-bottom: 8px; background: #12161e;
+}
+.card h3 { margin: 0 0 4px; font-size: 15px; }
+.meta { color: var(--muted); font-size: 13px; }
+.actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.badge { font-size: 11px; padding: 2px 7px; border-radius: 999px; background: #2a0f16; color: #fb7185; }
+.admin { max-width: 820px; margin: 0 auto; padding: 16px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+.form { display: grid; gap: 8px; margin: 14px 0 22px; }
+.hint { color: var(--muted); font-size: 13px; line-height: 1.45; }

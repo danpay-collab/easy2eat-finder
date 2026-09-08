@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin – Easy2Eat Finder</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    .admin-app {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      height: 100vh;
+    }
+    .admin-left, .admin-right {
+      height: 100vh;
+      overflow: auto;
+      padding: 16px;
+    }
+    .admin-left {
+      border-right: 1px solid var(--line);
+      background: #12161e;
+    }
+    .admin-right { background: #0f1115; }
+    .districts { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 12px; }
+    .districts button {
+      font-size: 12px;
+      padding: 6px 10px;
+    }
+    .districts button.on {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .count { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    @media (max-width: 800px) {
+      html, body { overflow: auto; }
+      .admin-app { grid-template-columns: 1fr; height: auto; }
+      .admin-left, .admin-right { height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-app">
+    <aside class="admin-left">
+      <h1 style="margin:0 0 6px;font-size:20px">Admin</h1>
+      <p class="hint"><a href="index.html">Tilbage til kort</a></p>
+      <p class="hint">Tilføj én kunde ad gangen, eller upload en Excel-fil (.xlsx) med mange rækker.</p>
+
+      <form id="form" class="form">
+        <input id="name" required placeholder="Navn" />
+        <input id="address" required placeholder="Adresse + postnr" />
+        <input id="city" required placeholder="By" />
+        <select id="region">
+          <option value="">Vælg distrikt (valgfrit)</option>
+          <option>Nordjylland</option>
+          <option>Midtjylland</option>
+          <option>Sønderjylland</option>
+          <option>Fyn</option>
+          <option>Sjælland</option>
+          <option>Nordsjælland</option>
+          <option>Lolland-Falster</option>
+          <option>Bornholm</option>
+        </select>
+        <input id="phone" placeholder="Telefon" />
+        <input id="website" required type="url" placeholder="https:// hjemmeside" />
+        <input type="hidden" id="editId" />
+        <div class="row">
+          <label class="hint">Åbner <input id="hoursOpen" value="15:00" type="time" /></label>
+          <label class="hint">Lukker <input id="hoursClose" value="21:00" type="time" /></label>
+        </div>
+        <button class="primary" type="submit" id="saveBtn">Gem nyt sted</button>
+        <button type="button" class="ghost" id="cancelEdit" style="display:none">Annuller redigering</button>
+        <div id="status" class="hint"></div>
+      </form>
+
+      <h2 style="font-size:15px;margin:18px 0 8px">Tilføj mange på én gang</h2>
+      <p class="hint">
+        Her uploader du en <strong>Excel-fil</strong> (.xlsx). Ikke CSV.<br><br>
+        Brug filen <strong>kunder-skabelon.xlsx</strong>. Udfyld navn, adresse, by og hjemmeside.
+        Distrikt kan vælges i Excel. Koordinater kan stå tomme – så finder systemet dem selv.<br><br>
+        Tryk på knappen og vælg din Excel-fil.
+      </p>
+      <input id="xlsx" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+      <div id="csvStatus" class="hint"></div>
+      <p class="hint" style="margin-top:14px">
+        <button id="reset" class="ghost" type="button">Nulstil startliste</button>
+      </p>
+    </aside>
+
+    <section class="admin-right">
+      <input id="q" placeholder="Søg navn, by eller adresse" style="width:100%;margin-bottom:8px" />
+      <div class="districts" id="districts"></div>
+      <div class="count" id="count"></div>
+      <table>
+        <thead>
+          <tr><th>Sted</th><th>Distrikt</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </section>
+  </div>
+  <script src="xlsx.full.min.js"></script>
+  <script src="seed.js"></script>
+  <script src="store.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

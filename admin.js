@@ -131,13 +131,40 @@ function editPlace(id) {
   if (!p) return;
   document.getElementById("editId").value = p.id;
   document.getElementById("name").value = p.name || "";
-  document.getElementById("address").value = p.street || p.address || "";
-  document.getElementById("zip").value = p.zip || "";
-  document.getElementById("city").value = p.city || "";
+  let street = p.street || "";
+  let zip = p.zip || "";
+  let city = p.city || "";
+  if (!zip || !street) {
+    const a = p.address || "";
+    const m = a.match(/^(.*?),\s*(\d{4})\s+(.+)$/) || a.match(/^(.*?)\s+(\d{4})\s+(.+)$/);
+    if (m) {
+      street = street || m[1].trim();
+      zip = zip || m[2];
+      city = city || m[3].trim();
+    }
+  }
+  document.getElementById("address").value = street;
+  document.getElementById("zip").value = zip;
+  document.getElementById("city").value = city;
   document.getElementById("region").value = p.region || guessRegion(p) || "";
   document.getElementById("phone").value = p.phone || "";
   document.getElementById("website").value = p.website || "";
-  drawWeek(p.week || defaultWeek());
+  let week = p.week;
+  if (!week) {
+    week = defaultWeek();
+    const ho = p.hoursOpen || "15:00";
+    const hc = p.hoursClose || "21:00";
+    Object.keys(week).forEach((k) => {
+      week[k].from = ho;
+      week[k].to = hc;
+      week[k].delivery = !!p.delivery;
+      if (p.delivery) {
+        week[k].dfrom = ho;
+        week[k].dto = hc;
+      }
+    });
+  }
+  drawWeek(week);
   const stillNew = p.createdAt && Date.now() - Number(p.createdAt) < 30 * 24 * 60 * 60 * 1000;
   document.getElementById("markNew").checked = !!stillNew;
   document.getElementById("saveBtn").textContent = "Gem ændringer";
@@ -187,6 +214,108 @@ function parseWorkbook(wb) {
     return o;
   });
 }
+
+async function loadHtml(url) {
+  const tries = [
+    url,
+    "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
+    "https://corsproxy.io/?" + encodeURIComponent(url),
+  ];
+  for (const u of tries) {
+    try {
+      const res = await fetch(u);
+      if (res.ok) {
+        const html = await res.text();
+        if (html && html.length > 200) return html;
+      }
+    } catch (err) {}
+  }
+  throw new Error("kunne ikke hente");
+}
+
+function parseServiceInfo(html) {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const text = doc.body ? doc.body.innerText : html;
+  const phoneM = text.match(/tlf\.?\s*:?\s*([0-9][0-9 \/]{7,20})/i);
+  const phone = phoneM ? phoneM[1].replace(/[^\d]/g, "").slice(0, 8) : "";
+  const addrM = text.match(/([A-ZÆØÅ][A-Za-zÆØÅæøå.\- ]+\s+\d+[A-Za-z]?)\s+(\d{4})\s+([A-ZÆØÅa-zæøå.\- ]{2,30})/);
+  const street = addrM ? addrM[1].trim() : "";
+  const zip = addrM ? addrM[2] : "";
+  const city = addrM ? addrM[3].trim() : "";
+  const week = defaultWeek();
+  const dayNames = {
+    mandag: "1",
+    tirsdag: "2",
+    onsdag: "3",
+    torsdag: "4",
+    fredag: "5",
+    lørdag: "6",
+    søndag: "0",
+  };
+  const lines = text.split(/\n+/).map((s) => s.trim()).filter(Boolean);
+  let section = "";
+  for (let i = 0; i < lines.length; i++) {
+    const low = lines[i].toLowerCase();
+    if (low.includes("åbningstid")) section = "open";
+    if (low.includes("udbringningstid") || low === "udbringning") section = "del";
+    const day = Object.keys(dayNames).find((d) => low === d || low.startsWith(d + " "));
+    if (!day) continue;
+    const nxt = (lines[i + 1] || "") + " " + lines[i];
+    const k = dayNames[day];
+    if (/lukket/i.test(nxt) && !/\d{1,2}:\d{2}/.test(nxt)) {
+      if (section === "del") week[k].delivery = false;
+      else week[k].open = false;
+      continue;
+    }
+    const times = nxt.match(/(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})/);
+    if (!times) continue;
+    const a = times[1].padStart(5, "0");
+    const b = times[2].padStart(5, "0");
+    if (section === "del") {
+      week[k].delivery = true;
+      week[k].dfrom = a;
+      week[k].dto = b;
+    } else {
+      week[k].open = true;
+      week[k].from = a;
+      week[k].to = b;
+    }
+  }
+  if (!/udbringningstid/i.test(text)) {
+    Object.values(week).forEach((d) => (d.delivery = false));
+  }
+  return { phone, street, zip, city, week, hasDel: /udbringningstid/i.test(text) };
+}
+
+document.getElementById("fetchInfo").addEventListener("click", async () => {
+  const website = document.getElementById("website").value.trim();
+  const status = document.getElementById("status");
+  if (!website) {
+    status.textContent = "Skriv hjemmesiden først.";
+    return;
+  }
+  status.textContent = "Henter infosiden…";
+  try {
+    const base = website.replace(/\/$/, "");
+    let html = "";
+    try {
+      html = await loadHtml(base + "/restaurant-service-info");
+    } catch (err) {
+      html = await loadHtml(base);
+    }
+    const info = parseServiceInfo(html);
+    if (info.street) document.getElementById("address").value = info.street;
+    if (info.zip) document.getElementById("zip").value = info.zip;
+    if (info.city) document.getElementById("city").value = info.city;
+    if (info.phone) document.getElementById("phone").value = info.phone;
+    drawWeek(info.week);
+    status.textContent = info.hasDel
+      ? "Hentet. Der er udbringning – tjek tiderne og gem."
+      : "Hentet. Ingen udbringning fundet – tjek tiderne og gem.";
+  } catch (err) {
+    status.textContent = "Kunne ikke læse siden (blokering eller lukket side). Udfyld selv.";
+  }
+});
 
 document.getElementById("form").addEventListener("submit", async (e) => {
   e.preventDefault();

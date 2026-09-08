@@ -2,7 +2,9 @@ window.E2E_SEED = [
   {
     id: 'aabybropizza',
     name: "Aabybro's Pizza & Steak House",
-    address: '9440 Aabybro',
+    street: 'Torvet 3',
+    zip: '9440',
+    address: 'Torvet 3, 9440 Aabybro',
     city: 'Aabybro',
     lat: 57.162,
     lng: 9.74,
@@ -10,12 +12,14 @@ window.E2E_SEED = [
     website: 'https://www.aabybropizza.dk',
     hoursOpen: '11:00',
     hoursClose: '21:00',
-    delivery: true,
+    delivery: false,
     active: true
   },
   {
     id: 'adamspizza',
     name: 'Adams Pizzaria Skødstrup',
+    street: 'Grenåvej 787',
+    zip: '8541',
     address: 'Grenåvej 787, 8541 Skødstrup',
     city: 'Skødstrup',
     lat: 56.262,
@@ -30,6 +34,8 @@ window.E2E_SEED = [
   {
     id: 'alaturka',
     name: 'Alaturka Restaurant i Grindsted',
+    street: 'Fynsgade 13A',
+    zip: '7200',
     address: 'Fynsgade 13A, 7200 Grindsted',
     city: 'Grindsted',
     lat: 55.754,
@@ -44,7 +50,9 @@ window.E2E_SEED = [
   {
     id: 'alcaponepizza',
     name: 'Al Capone Pizza i Esbjerg',
-    address: 'Frodesgade 111 6700 Esbjerg',
+    street: 'Frodesgade 111',
+    zip: '6700',
+    address: 'Frodesgade 111, 6700 Esbjerg',
     city: 'Esbjerg',
     lat: 55.467,
     lng: 8.452,
@@ -90,6 +98,8 @@ window.E2E_SEED = [
   {
     id: 'alrayespizza',
     name: 'Al Rayes Pizza & manakish i Aarhus, Inger Christensens ',
+    street: '',
+    zip: '8220',
     address: '8220 Brabrand',
     city: 'Brabrand',
     lat: 56.153,
@@ -120,6 +130,8 @@ window.E2E_SEED = [
   {
     id: 'amigopizza',
     name: 'Amigo Pizzeria',
+    street: 'Mommarkvej 264',
+    zip: '6470',
     address: 'Mommarkvej 264, 6470 Sydals',
     city: 'Sydals',
     lat: 54.899,
@@ -134,6 +146,8 @@ window.E2E_SEED = [
   {
     id: 'amigosvodskov',
     name: 'Amigos Pizza',
+    street: 'Vodskovvej 25E',
+    zip: '9310',
     address: 'Vodskovvej 25E, 9310 Vodskov',
     city: 'Vodskov',
     lat: 57.109,
@@ -148,6 +162,8 @@ window.E2E_SEED = [
   {
     id: 'amore-pizza',
     name: 'Kebab Huset Amore',
+    street: 'Thomsensgade 2 B',
+    zip: '7800',
     address: 'Thomsensgade 2 B, 7800 Skive',
     city: 'Skive',
     lat: 56.567,
@@ -162,6 +178,8 @@ window.E2E_SEED = [
   {
     id: 'amorpizza',
     name: 'Amor Pizza Aalborg l',
+    street: 'Stationsvej 31',
+    zip: '9400',
     address: 'Stationsvej 31, 9400 Nørresundby',
     city: 'Nørresundby',
     lat: 57.059,
@@ -176,6 +194,8 @@ window.E2E_SEED = [
   {
     id: 'anaskebab',
     name: 'Anas Kebab Roskilde',
+    street: 'Helligkorsvej 12',
+    zip: '4000',
     address: 'Helligkorsvej 12, 4000 Roskilde',
     city: 'Roskilde',
     lat: 55.642,
@@ -190,6 +210,8 @@ window.E2E_SEED = [
   {
     id: 'andospizza',
     name: 'Andos Pizza i Aalborg',
+    street: 'Søndergade 43',
+    zip: '9000',
     address: 'Søndergade 43, 9000 Aalborg',
     city: 'Aalborg',
     lat: 57.048,
@@ -220,6 +242,8 @@ window.E2E_SEED = [
   {
     id: 'augustenborg-pizza',
     name: 'Augustenborg Pizza & Grill',
+    street: 'Centervej 2',
+    zip: '6440',
     address: 'Centervej 2, 6440 Augustenborg',
     city: 'Augustenborg',
     lat: 54.944,
@@ -234,7 +258,9 @@ window.E2E_SEED = [
   {
     id: 'babaspizza',
     name: 'Babas Pizza & Grill i Esbjerg',
-    address: '1823',
+    street: '',
+    zip: '1823',
+    address: '1823 Forsiden',
     city: 'Forsiden',
     lat: 56.26,
     lng: 9.5,
@@ -280,6 +306,8 @@ window.E2E_SEED = [
   {
     id: 'bellavodskov',
     name: 'Bella Italia Pizza og Grill I Vodskov',
+    street: 'Vodskovvej 35',
+    zip: '9310',
     address: 'Vodskovvej 35, 9310 Vodskov',
     city: 'Vodskov',
     lat: 57.109,
@@ -310,6 +338,8 @@ window.E2E_SEED = [
   {
     id: 'bogeskovpizza',
     name: 'Bøgeskov Pizza og Steakhouse i Bøgeskov, Fredericia',
+    street: 'Bøgeskovvej 41',
+    zip: '7000',
     address: 'Bøgeskovvej 41, 7000 Fredericia',
     city: 'Fredericia',
     lat: 56.26,
@@ -324,6 +354,8 @@ window.E2E_SEED = [
   {
     id: 'brammingpizza',
     name: 'Bramming Pizza og Kebabhouse',
+    street: 'Nørregade 25',
+    zip: '6740',
     address: 'Nørregade 25, 6740 Bramming',
     city: 'Bramming',
     lat: 55.469,
@@ -338,7 +370,9 @@ window.E2E_SEED = [
   {
     id: 'broagerpizza',
     name: 'Broager Pizza I Broager',
-    address: 'Storegade 23 6310 Broager',
+    street: 'Storegade 23',
+    zip: '6310',
+    address: 'Storegade 23, 6310 Broager',
     city: 'Broager',
     lat: 54.891,
     lng: 9.672,
@@ -384,7 +418,9 @@ window.E2E_SEED = [
   {
     id: 'cafeistanbul',
     name: 'Cafe Istanbul Pizza Haderslev',
-    address: 'Apotekergade 2 st. 6100 Haderslev',
+    street: 'Apotekergade 2 st.',
+    zip: '6100',
+    address: 'Apotekergade 2 st., 6100 Haderslev',
     city: 'Haderslev',
     lat: 56.26,
     lng: 9.5,
@@ -398,7 +434,9 @@ window.E2E_SEED = [
   {
     id: 'centrepalace',
     name: 'Centre Palace',
-    address: '2078',
+    street: '',
+    zip: '2078',
+    address: '2078 Forsiden',
     city: 'Forsiden',
     lat: 56.26,
     lng: 9.5,
@@ -444,6 +482,8 @@ window.E2E_SEED = [
   {
     id: 'davinciaulum',
     name: 'Da Vinci Aulum',
+    street: 'Danmarksgade 3-5',
+    zip: '7490',
     address: 'Danmarksgade 3-5, 7490 Aulum',
     city: 'Aulum',
     lat: 56.266,
@@ -474,6 +514,8 @@ window.E2E_SEED = [
   {
     id: 'dinosroslev',
     name: "Dino's Pizzaria i Roslev",
+    street: 'Frederiksgade 17',
+    zip: '7870',
     address: 'Frederiksgade 17, 7870 Roslev',
     city: 'Roslev',
     lat: 56.7,
@@ -488,7 +530,9 @@ window.E2E_SEED = [
   {
     id: 'doropizza',
     name: 'Doro Pizza Restaurant i Gråsten',
-    address: '6800',
+    street: '',
+    zip: '6800',
+    address: '6800 Forsiden',
     city: 'Forsiden',
     lat: 56.26,
     lng: 9.5,
@@ -518,6 +562,8 @@ window.E2E_SEED = [
   {
     id: 'falafelhouse',
     name: 'Falafel House i Aalborg',
+    street: 'Reberbansgade 16 A',
+    zip: '9000',
     address: 'Reberbansgade 16 A, 9000 Aalborg',
     city: 'Aalborg',
     lat: 57.048,
@@ -532,6 +578,8 @@ window.E2E_SEED = [
   {
     id: 'fanoepizza',
     name: 'Fanø Pizza på Fanø',
+    street: 'Valdemarsvej 14',
+    zip: '6720',
     address: 'Valdemarsvej 14, 6720 Fanø',
     city: 'Fanø',
     lat: 55.416,
@@ -546,6 +594,8 @@ window.E2E_SEED = [
   {
     id: 'gedvedgrillen',
     name: 'Gedved Grillen i Gedved',
+    street: 'Egebjergvej 21',
+    zip: '8751',
     address: 'Egebjergvej 21, 8751 Gedved',
     city: 'Gedved',
     lat: 55.932,
@@ -576,6 +626,8 @@ window.E2E_SEED = [
   {
     id: 'gustoherning',
     name: 'Gusto Sandwich & Pizza Herning',
+    street: 'Østergade 12',
+    zip: '7400',
     address: 'Østergade 12, 7400 Herning',
     city: 'Herning',
     lat: 56.139,

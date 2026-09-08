@@ -48,10 +48,10 @@
 
       <form id="form" class="form">
         <input id="name" required placeholder="Navn" />
-        <input id="address" required placeholder="Vej og nr" />
         <div class="row">
-          <input id="zip" required placeholder="Postnr" maxlength="4" style="width:90px;flex:0 0 90px" />
-          <input id="city" required placeholder="By" />
+          <input id="address" required placeholder="Vej og nr" style="flex:1.2" />
+          <input id="zip" required placeholder="Postnr" maxlength="4" style="width:88px;flex:0 0 88px" />
+          <input id="city" required placeholder="By" style="flex:1" />
         </div>
         <select id="region">
           <option value="">Vælg distrikt (valgfrit)</option>
@@ -65,7 +65,10 @@
           <option>Bornholm</option>
         </select>
         <input id="phone" placeholder="Telefon" />
-        <input id="website" required type="url" placeholder="https:// hjemmeside" />
+        <div class="row">
+          <input id="website" required type="url" placeholder="https:// hjemmeside" style="flex:1" />
+          <button type="button" id="fetchInfo" class="ghost">Hent fra infosiden</button>
+        </div>
         <input type="hidden" id="editId" />
         <p class="hint">Åbning og udbringning pr. dag. Fjern fluebenet under Åben = lukkedag.</p>
         <div id="weekHours" class="week-hours"></div>

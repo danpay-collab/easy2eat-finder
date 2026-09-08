@@ -131,17 +131,17 @@ function editPlace(id) {
   if (!p) return;
   document.getElementById("editId").value = p.id;
   document.getElementById("name").value = p.name || "";
+  const raw = [p.street || "", p.address || "", p.zip || "", p.city || ""].join(" ");
   let street = p.street || "";
   let zip = p.zip || "";
   let city = p.city || "";
-  if (!zip || !street) {
-    const a = p.address || "";
-    const m = a.match(/^(.*?),\s*(\d{4})\s+(.+)$/) || a.match(/^(.*?)\s+(\d{4})\s+(.+)$/);
-    if (m) {
-      street = street || m[1].trim();
-      zip = zip || m[2];
-      city = city || m[3].trim();
-    }
+  const m = raw.match(/^(.*?)[,\s]+(\d{4})\s+(.+)$/);
+  if (m) {
+    street = m[1].replace(/,\s*$/, "").trim();
+    zip = m[2];
+    city = m[3].trim();
+  } else if (!street) {
+    street = (p.address || "").replace(/,?\s*\d{4}.*$/, "").trim();
   }
   document.getElementById("address").value = street;
   document.getElementById("zip").value = zip;
@@ -302,7 +302,7 @@ function parseServiceInfo(html) {
   return { phone, street, zip, city, week, hasDel: /udbringningstid/i.test(text) };
 }
 
-document.getElementById("fetchInfo").addEventListener("click", async () => {
+async function hentInfo() {
   const website = document.getElementById("website").value.trim();
   const status = document.getElementById("status");
   if (!website) {
@@ -334,7 +334,10 @@ document.getElementById("fetchInfo").addEventListener("click", async () => {
     setFetchBtn("err", "Ikke hentet");
     status.textContent = "Kunne ikke læse siden (blokering eller lukket side). Udfyld selv.";
   }
-});
+}
+window.hentInfo = hentInfo;
+const fetchBtn = document.getElementById("fetchInfo");
+if (fetchBtn) fetchBtn.addEventListener("click", hentInfo);
 
 document.getElementById("form").addEventListener("submit", async (e) => {
   e.preventDefault();

@@ -20,6 +20,7 @@ const I18N = {
     show: "Vis på kort",
     empty: "Ingen steder matcher. Prøv et andet distrikt eller en anden by.",
     km: "km",
+    ny: "NY",
   },
   en: {
     title: "Easy2Eat Finder",
@@ -42,6 +43,7 @@ const I18N = {
     show: "Show on map",
     empty: "No places match. Try another area or town.",
     km: "km",
+    ny: "NEW",
   },
   de: {
     title: "Easy2Eat Finder",
@@ -64,6 +66,7 @@ const I18N = {
     show: "Auf Karte zeigen",
     empty: "Keine Treffer. Anderen Bereich oder andere Stadt versuchen.",
     km: "km",
+    ny: "NEU",
   },
 };
 

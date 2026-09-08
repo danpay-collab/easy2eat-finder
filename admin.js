@@ -170,6 +170,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
       hoursOpen,
       hoursClose,
       delivery: existing ? !!existing.delivery : false,
+      createdAt: existing && existing.createdAt ? existing.createdAt : Date.now(),
       lat,
       lng,
       active: existing ? existing.active !== false : true,
@@ -242,6 +243,7 @@ document.getElementById("xlsx").addEventListener("change", async (e) => {
       website,
       lat,
       lng,
+      createdAt: Date.now(),
       active: true,
     });
     ok++;

@@ -14,6 +14,12 @@ const DISTRICTS = [
 ];
 
 const DEFAULT_HOURS = { open: "15:00", close: "21:00" };
+const NEW_MS = 30 * 24 * 60 * 60 * 1000;
+
+function isNewPlace(p) {
+  const t0 = Number(p.createdAt);
+  return t0 && Date.now() - t0 < NEW_MS;
+}
 
 function nowInDk() {
   const parts = new Intl.DateTimeFormat("en-GB", {
@@ -114,13 +120,23 @@ function render() {
   markersLayer.clearLayers();
   list.forEach((p) => {
     const color = p.openNow ? "#16a34a" : p.delivery ? "#f59e0b" : "#e11d48";
-    const m = L.circleMarker([p.lat, p.lng], {
-      radius: 8,
-      color,
-      weight: 2,
-      fillColor: color,
-      fillOpacity: 0.95,
-    }).addTo(markersLayer);
+    const fresh = isNewPlace(p);
+    const m = fresh
+      ? L.marker([p.lat, p.lng], {
+          icon: L.divIcon({
+            className: "",
+            html: `<div class="leaflet-ny"><span class="ny-badge">${t("ny")}</span><span class="dot" style="background:${color}"></span></div>`,
+            iconSize: [28, 28],
+            iconAnchor: [14, 18],
+          }),
+        }).addTo(markersLayer)
+      : L.circleMarker([p.lat, p.lng], {
+          radius: 8,
+          color,
+          weight: 2,
+          fillColor: color,
+          fillOpacity: 0.95,
+        }).addTo(markersLayer);
     const status = p.openNow ? t("nowOpen") : t("nowClosed");
     m.bindTooltip(`${p.name} · ${status}`, {
       direction: "top",
@@ -136,7 +152,8 @@ function popupHtml(p) {
   const km = p.km != null ? `<div>${p.km.toFixed(1)} km</div>` : "";
   const tel = p.phone ? `<a href="tel:${p.phone}">${t("call")} ${p.phone}</a>` : "";
   const status = p.openNow ? t("nowOpen") : t("nowClosed");
-  return `<strong>${p.name}</strong><br>${p.address}<br>
+  const ny = isNewPlace(p) ? ` <span class="ny-badge">${t("ny")}</span>` : "";
+  return `<strong>${p.name}</strong>${ny}<br>${p.address}<br>
     ${t("hoursToday")} ${p.hours.open}–${p.hours.close} · ${status}<br>${km}${tel}<br>
     <a href="${p.website}" target="_blank" rel="noopener">${t("open")}</a>`;
 }
@@ -159,7 +176,7 @@ function drawList(list) {
         ? t("nowClosed") + " · " + t("preorder")
         : t("nowClosed");
       return `<article class="card">
-        <h3>${p.name} ${km}</h3>
+        <h3>${p.name} ${isNewPlace(p) ? `<span class="ny-badge">${t("ny")}</span>` : ""} ${km}</h3>
         <div class="meta">${p.address}</div>
         <div class="meta hours ${cls}">${t("hoursToday")} ${p.hours.open}–${p.hours.close} · ${status}</div>
         <div class="actions">

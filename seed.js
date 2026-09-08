@@ -58,6 +58,8 @@ window.E2E_SEED = [
   {
     id: 'alibabas-pizza',
     name: 'Ali Babas Pizza & Grill i Vamdrup',
+    street: 'Vestergade 30',
+    zip: '6580',
     address: 'Vestergade 30, 6580 Vamdrup',
     city: 'Vamdrup',
     lat: 55.428,
@@ -72,14 +74,16 @@ window.E2E_SEED = [
   {
     id: 'almindpizza',
     name: 'Jacob Almind Pizza & Grill i Almind',
-    address: '6051 Almind',
+    street: 'Almind Kirkesti 2',
+    zip: '6051',
+    address: 'Almind Kirkesti 2, 6051 Almind',
     city: 'Almind',
     lat: 55.557,
     lng: 9.488,
     phone: '75561777',
     website: 'https://www.almindpizza.dk',
-    hoursOpen: '15:00',
-    hoursClose: '21:00',
+    hoursOpen: '15:30',
+    hoursClose: '20:30',
     delivery: true,
     active: true
   },
@@ -100,6 +104,8 @@ window.E2E_SEED = [
   {
     id: 'alsgadepizza',
     name: 'Alsgade Pizza & Grill Take Away Menu i Sønderborg',
+    street: 'Alsgade 76',
+    zip: '6400',
     address: 'Alsgade 76, 6400 Sønderborg',
     city: 'Sønderborg',
     lat: 54.909,
@@ -198,6 +204,8 @@ window.E2E_SEED = [
   {
     id: 'arizonapizza',
     name: 'Arizona Pizza Esbjerg',
+    street: 'Isbjørnevej 132',
+    zip: '6715',
     address: 'Isbjørnevej 132, 6715 Esbjerg N',
     city: 'Esbjerg N',
     lat: 55.521,
@@ -240,6 +248,8 @@ window.E2E_SEED = [
   {
     id: 'bambi-pizza',
     name: 'Bambi Pizza og Grill House Holstebro',
+    street: 'Struervej 49',
+    zip: '7500',
     address: 'Struervej 49, 7500 Holstebro',
     city: 'Holstebro',
     lat: 56.36,
@@ -254,7 +264,9 @@ window.E2E_SEED = [
   {
     id: 'bellaitalia',
     name: 'Bella Italia Pizza Esbjerg',
-    address: 'Vardevej 171, 6715 Esbjerg',
+    street: 'Gl Vardevej 171',
+    zip: '6715',
+    address: 'Gl Vardevej 171, 6715 Esbjerg',
     city: 'Esbjerg',
     lat: 55.521,
     lng: 8.469,
@@ -282,6 +294,8 @@ window.E2E_SEED = [
   {
     id: 'bigbite',
     name: 'Big Bite Pizza & Burger',
+    street: 'Fyensgade 38',
+    zip: '9000',
     address: 'Fyensgade 38, 9000 Aalborg',
     city: 'Aalborg',
     lat: 57.048,
@@ -338,6 +352,8 @@ window.E2E_SEED = [
   {
     id: 'byenspizzaria',
     name: 'Byens Pizzaria',
+    street: 'Nørregade 10',
+    zip: '9700',
     address: 'Nørregade 10, 9700 Brønderslev',
     city: 'Brønderslev',
     lat: 56.26,
@@ -352,6 +368,8 @@ window.E2E_SEED = [
   {
     id: 'cafealfa',
     name: 'Cafe Alfa Holstebro',
+    street: 'Nørregade 48',
+    zip: '7500',
     address: 'Nørregade 48, 7500 Holstebro',
     city: 'Holstebro',
     lat: 56.36,
@@ -394,8 +412,10 @@ window.E2E_SEED = [
   {
     id: 'chaps-pizza',
     name: 'Chaps Pizza i Aabenraa',
-    address: 'Vestergade 7A, 6200 Åbenrå',
-    city: 'Åbenrå',
+    street: 'Vestergade 7A',
+    zip: '6200',
+    address: 'Vestergade 7A, 6200 Aabenraa',
+    city: 'Aabenraa',
     lat: 55.044,
     lng: 9.418,
     phone: '73622200',
@@ -408,7 +428,9 @@ window.E2E_SEED = [
   {
     id: 'dannipizzaoggrill',
     name: 'Danni Pizza & Grill i Aarhus',
-    address: 'Larsensvej 4, 8220 Brabrand',
+    street: 'J. P. Larsensvej 4',
+    zip: '8220',
+    address: 'J. P. Larsensvej 4, 8220 Brabrand',
     city: 'Brabrand',
     lat: 56.153,
     lng: 10.135,
@@ -436,7 +458,9 @@ window.E2E_SEED = [
   {
     id: 'dinospizza',
     name: 'Dinos Pizza & Restaurant i Struer',
-    address: 'Østergade 34 7600 Struer',
+    street: 'Østergade 34',
+    zip: '7600',
+    address: 'Østergade 34, 7600 Struer',
     city: 'Struer',
     lat: 56.484,
     lng: 8.594,
@@ -478,6 +502,8 @@ window.E2E_SEED = [
   {
     id: 'emmapizza',
     name: 'Emma Pizza & Grill i Aarhus',
+    street: 'Sønderborggade 9',
+    zip: '8000',
     address: 'Sønderborggade 9, 8000 Aarhus',
     city: 'Aarhus',
     lat: 56.157,
@@ -534,8 +560,10 @@ window.E2E_SEED = [
   {
     id: 'goldenspizza',
     name: 'Goldens Pizza og Burger i Børkop',
-    address: '1555',
-    city: 'Forsiden',
+    street: 'Ågade 1',
+    zip: '7080',
+    address: 'Ågade 1, 7080 Børkop',
+    city: 'Børkop',
     lat: 56.26,
     lng: 9.5,
     phone: '75861555',
@@ -562,6 +590,8 @@ window.E2E_SEED = [
   {
     id: 'pizza-mix',
     name: 'Velkommen til Pizza Mix i Aalborg! Vi tilbyder et stort',
+    street: 'Danmarksgade 28',
+    zip: '9000',
     address: 'Danmarksgade 28, 9000 Aalborg',
     city: 'Aalborg',
     lat: 57.048,
@@ -576,7 +606,9 @@ window.E2E_SEED = [
   {
     id: 'r-pizza',
     name: 'Rønhaveplads Pizza & Grill Sønderborg. Byens bedste Tak',
-    address: 'Rønhaveplads 7 6400 Sønderborg',
+    street: 'Rønhaveplads 7',
+    zip: '6400',
+    address: 'Rønhaveplads 7, 6400 Sønderborg',
     city: 'Sønderborg',
     lat: 54.909,
     lng: 9.792,
@@ -590,8 +622,10 @@ window.E2E_SEED = [
   {
     id: 'sakurasushibar',
     name: 'Sakura Sushi Bar i Horsens',
-    address: '2288',
-    city: 'Forsiden',
+    street: 'Åboulevarden 73',
+    zip: '8700',
+    address: 'Åboulevarden 73, 8700 Horsens',
+    city: 'Horsens',
     lat: 56.26,
     lng: 9.5,
     phone: '29792288',
@@ -604,6 +638,8 @@ window.E2E_SEED = [
   {
     id: 'skalborgpizza',
     name: 'Skalborg Pizza',
+    street: 'Hobrovej 390',
+    zip: '9200',
     address: 'Hobrovej 390, 9200 Aalborg SV',
     city: 'Aalborg SV',
     lat: 57.014,
@@ -612,6 +648,22 @@ window.E2E_SEED = [
     website: 'https://www.skalborgpizza.dk',
     hoursOpen: '16:00',
     hoursClose: '20:25',
+    delivery: true,
+    active: true
+  }
+  ,{
+    id: 'hobropizza',
+    name: 'Hobro Pizza & Grill',
+    street: 'Adelgade 53',
+    zip: '9500',
+    address: 'Adelgade 53, 9500 Hobro',
+    city: 'Hobro',
+    lat: 56.643,
+    lng: 9.790,
+    phone: '29759500',
+    website: 'https://www.hobropizza.dk',
+    hoursOpen: '12:00',
+    hoursClose: '20:45',
     delivery: true,
     active: true
   }

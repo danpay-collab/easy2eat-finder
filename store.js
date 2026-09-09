@@ -1,17 +1,86 @@
 const KEY = "e2e_places_v1";
 
-function loadPlaces() {
+const firebaseConfig = {
+  apiKey: "AIzaSyBvv5dDAMT-5rexTzTx6TwsYjfQnC9LrPM",
+  authDomain: "easy2eat-pizzamap.firebaseapp.com",
+  projectId: "easy2eat-pizzamap",
+  storageBucket: "easy2eat-pizzamap.firebasestorage.app",
+  messagingSenderId: "717161944352",
+  appId: "1:717161944352:web:0ae6c052d6496ce71bb345",
+  measurementId: "G-TXXPR45WFF",
+};
+
+let cache = null;
+let fbDoc = null;
+
+function localSeed() {
+  return (window.E2E_SEED || []).map((p) => ({ ...p }));
+}
+
+function readLocal() {
   try {
     const raw = localStorage.getItem(KEY);
     if (raw) return JSON.parse(raw);
   } catch (e) {}
-  const seed = (window.E2E_SEED || []).map((p) => ({ ...p }));
-  savePlaces(seed);
-  return seed;
+  return null;
+}
+
+function writeLocal(list) {
+  cache = list;
+  try {
+    localStorage.setItem(KEY, JSON.stringify(list));
+  } catch (e) {}
+}
+
+function loadPlaces() {
+  if (cache) return cache;
+  const local = readLocal();
+  if (local) {
+    cache = local;
+    return cache;
+  }
+  cache = localSeed();
+  return cache;
 }
 
 function savePlaces(list) {
-  localStorage.setItem(KEY, JSON.stringify(list));
+  writeLocal(list);
+  if (fbDoc) {
+    fbDoc.set({ items: list, updatedAt: Date.now() }).catch((err) => {
+      console.warn("Firebase gem fejlede", err);
+    });
+  }
+  return list;
+}
+
+async function initStore() {
+  cache = readLocal() || localSeed();
+  if (typeof firebase === "undefined" || !firebase.firestore) return cache;
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    fbDoc = db.collection("data").doc("places");
+    const snap = await fbDoc.get();
+    if (snap.exists && Array.isArray(snap.data().items) && snap.data().items.length) {
+      cache = snap.data().items;
+      writeLocal(cache);
+    } else {
+      await fbDoc.set({ items: cache, updatedAt: Date.now() });
+    }
+    fbDoc.onSnapshot((s) => {
+      if (!s.exists) return;
+      const items = s.data().items;
+      if (!Array.isArray(items)) return;
+      cache = items;
+      writeLocal(cache);
+      if (typeof render === "function") render();
+      if (typeof drawTable === "function") drawTable();
+      if (typeof drawDistricts === "function") drawDistricts();
+    });
+  } catch (err) {
+    console.warn("Firebase startede ikke", err);
+  }
+  return cache;
 }
 
 function activePlaces() {
@@ -19,7 +88,7 @@ function activePlaces() {
 }
 
 function upsertPlace(place) {
-  const list = loadPlaces();
+  const list = loadPlaces().slice();
   const i = list.findIndex((p) => p.id === place.id);
   if (i >= 0) list[i] = place;
   else list.push(place);
@@ -34,13 +103,15 @@ function removePlace(id) {
 }
 
 function resetSeed() {
-  localStorage.removeItem(KEY);
-  return loadPlaces();
+  const seed = localSeed();
+  savePlaces(seed);
+  return seed;
 }
 
 function guessRegion(p) {
   if (p.region) return p.region;
-  const lat = Number(p.lat), lng = Number(p.lng);
+  const lat = Number(p.lat),
+    lng = Number(p.lng);
   if (!lat || !lng) return "";
   if (lng > 14) return "Bornholm";
   if (lat < 55.05 && lng > 10.7 && lng < 12.45) return "Lolland-Falster";

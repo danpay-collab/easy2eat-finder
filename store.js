@@ -60,17 +60,25 @@ async function initStore() {
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     fbDoc = db.collection("data").doc("places");
-    const snap = await fbDoc.get();
-    if (snap.exists && Array.isArray(snap.data().items) && snap.data().items.length) {
+    let snap = null;
+    try {
+      snap = await Promise.race([
+        fbDoc.get(),
+        new Promise(function (_, rej) { setTimeout(function () { rej(new Error("timeout")); }, 4000); })
+      ]);
+    } catch (e) {
+      snap = null;
+    }
+    if (snap && snap.exists && Array.isArray(snap.data().items) && snap.data().items.length) {
       cache = snap.data().items;
       writeLocal(cache);
-    } else {
-      await fbDoc.set({ items: cache, updatedAt: Date.now() });
+    } else if (cache && cache.length) {
+      fbDoc.set({ items: cache, updatedAt: Date.now() }).catch(function () {});
     }
-    fbDoc.onSnapshot((s) => {
+    fbDoc.onSnapshot(function (s) {
       if (!s.exists) return;
       const items = s.data().items;
-      if (!Array.isArray(items)) return;
+      if (!Array.isArray(items) || !items.length) return;
       cache = items;
       writeLocal(cache);
       if (typeof render === "function") render();

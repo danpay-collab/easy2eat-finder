@@ -472,8 +472,10 @@ document.getElementById("reset").addEventListener("click", () => {
 
 document.getElementById("q").addEventListener("input", drawTable);
 
+drawDistricts();
+drawWeek();
+drawTable();
 initStore().then(function () {
   drawDistricts();
-  drawWeek();
   drawTable();
 });

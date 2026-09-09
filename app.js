@@ -252,9 +252,11 @@ document.getElementById("q").addEventListener("input", render);
 document.getElementById("radius").addEventListener("change", render);
 document.getElementById("locate").addEventListener("click", locateMe);
 
+initMap();
+setInterval(render, 60000);
 initStore().then(function () {
-  initMap();
-  setInterval(render, 60000);
+  if (typeof render === "function") render();
+  if (typeof drawDistricts === "function") drawDistricts();
 });
 
 (function () {

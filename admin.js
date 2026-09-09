@@ -62,6 +62,42 @@ function readWeek() {
   return w;
 }
 
+function dedupeText(s) {
+  s = String(s || "").replace(/\s+/g, " ").trim();
+  const parts = s.split(" ");
+  if (parts.length >= 2 && parts.length % 2 === 0) {
+    const a = parts.slice(0, parts.length / 2).join(" ");
+    const b = parts.slice(parts.length / 2).join(" ");
+    if (a === b) return a;
+  }
+  return s;
+}
+
+function cleanAddressParts(p) {
+  let street = dedupeText(p.street || "");
+  let zip = String(p.zip || "").replace(/\D/g, "").slice(0, 4);
+  let city = dedupeText(p.city || "");
+  const blob = [street, p.address || "", zip, city].join(" ");
+  const m = blob.match(/(\d{4})/);
+  if (m) zip = zip || m[1];
+  const before = blob.split(zip)[0] || street;
+  const after = zip ? blob.split(zip).slice(1).join(" ") : city;
+  street = dedupeText(before.replace(/[,\s]+$/g, ""));
+  city = dedupeText(after.replace(/^[,\s]+/, "").replace(zip, " "));
+  city = city.replace(/^\d{4}\s*/, "").trim();
+  if (street.includes(zip)) street = street.replace(zip, "").replace(/[,\s]+$/g, "").trim();
+  return { street, zip, city };
+}
+
+function normalizeWebsite(raw) {
+  let s = String(raw || "").trim();
+  if (!s) return "";
+  s = s.replace(/^https?:\/\//i, "").replace(/^www\./i, "");
+  s = s.replace(/\/+$/, "");
+  if (!s.includes(".")) s += ".dk";
+  return "https://www." + s;
+}
+
 function uid() {
   return "p-" + Math.random().toString(36).slice(2, 9);
 }
@@ -131,21 +167,10 @@ function editPlace(id) {
   if (!p) return;
   document.getElementById("editId").value = p.id;
   document.getElementById("name").value = p.name || "";
-  const raw = [p.street || "", p.address || "", p.zip || "", p.city || ""].join(" ");
-  let street = p.street || "";
-  let zip = p.zip || "";
-  let city = p.city || "";
-  const m = raw.match(/^(.*?)[,\s]+(\d{4})\s+(.+)$/);
-  if (m) {
-    street = m[1].replace(/,\s*$/, "").trim();
-    zip = m[2];
-    city = m[3].trim();
-  } else if (!street) {
-    street = (p.address || "").replace(/,?\s*\d{4}.*$/, "").trim();
-  }
-  document.getElementById("address").value = street;
-  document.getElementById("zip").value = zip;
-  document.getElementById("city").value = city;
+  const parts = cleanAddressParts(p);
+  document.getElementById("address").value = parts.street;
+  document.getElementById("zip").value = parts.zip;
+  document.getElementById("city").value = parts.city;
   document.getElementById("region").value = p.region || guessRegion(p) || "";
   document.getElementById("phone").value = p.phone || "";
   document.getElementById("website").value = p.website || "";
@@ -253,6 +278,11 @@ function parseServiceInfo(html) {
   const text = doc.body ? doc.body.innerText : html;
   const phoneM = text.match(/tlf\.?\s*:?\s*([0-9][0-9 \/]{7,20})/i);
   const phone = phoneM ? phoneM[1].replace(/[^\d]/g, "").slice(0, 8) : "";
+  let name = "";
+  const h = doc.querySelector("h1, h2, strong");
+  if (h) name = h.textContent.trim().split("\n")[0].trim();
+  if (!name && doc.title) name = doc.title.split("-")[0].split("|")[0].trim();
+  name = name.replace(/\s+/g, " ").slice(0, 80);
   const addrM = text.match(/([A-ZÆØÅ][A-Za-zÆØÅæøå.\- ]+\s+\d+[A-Za-z]?)\s+(\d{4})\s+([A-ZÆØÅa-zæøå.\- ]{2,30})/);
   const street = addrM ? addrM[1].trim() : "";
   const zip = addrM ? addrM[2] : "";
@@ -299,11 +329,12 @@ function parseServiceInfo(html) {
   if (!/udbringningstid/i.test(text)) {
     Object.values(week).forEach((d) => (d.delivery = false));
   }
-  return { phone, street, zip, city, week, hasDel: /udbringningstid/i.test(text) };
+  return { name, phone, street, zip, city, week, hasDel: /udbringningstid/i.test(text) };
 }
 
 async function hentInfo() {
-  const website = document.getElementById("website").value.trim();
+  const website = normalizeWebsite(document.getElementById("website").value);
+  document.getElementById("website").value = website;
   const status = document.getElementById("status");
   if (!website) {
     status.textContent = "Skriv hjemmesiden først.";
@@ -321,9 +352,14 @@ async function hentInfo() {
       html = await loadHtml(base);
     }
     const info = parseServiceInfo(html);
-    if (info.street) document.getElementById("address").value = info.street;
+    if (info.name && !document.getElementById("name").value.trim()) {
+      document.getElementById("name").value = info.name;
+    } else if (info.name) {
+      document.getElementById("name").value = info.name;
+    }
+    if (info.street) document.getElementById("address").value = dedupeText(info.street);
     if (info.zip) document.getElementById("zip").value = info.zip;
-    if (info.city) document.getElementById("city").value = info.city;
+    if (info.city) document.getElementById("city").value = dedupeText(info.city.replace(/^\d{4}\s*/, ""));
     if (info.phone) document.getElementById("phone").value = info.phone;
     drawWeek(info.week);
     setFetchBtn("ok", "Hentet");
@@ -348,7 +384,8 @@ document.getElementById("form").addEventListener("submit", async (e) => {
   const address = street + ", " + zip + " " + city;
   const region = document.getElementById("region").value.trim();
   const phone = document.getElementById("phone").value.trim();
-  const website = document.getElementById("website").value.trim();
+  const website = normalizeWebsite(document.getElementById("website").value);
+  document.getElementById("website").value = website;
   const week = readWeek();
   const anyDel = Object.values(week).some((d) => d.delivery);
   const editId = document.getElementById("editId").value;

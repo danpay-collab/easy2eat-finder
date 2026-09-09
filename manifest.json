@@ -1,6 +1,6 @@
 {
-  "name": "Easy2Eat Finder",
-  "short_name": "E2E Finder",
+  "name": "Easy2Eat PizzaMap",
+  "short_name": "PizzaMap",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#111111",

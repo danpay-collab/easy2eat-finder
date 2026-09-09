@@ -1,6 +1,6 @@
 const I18N = {
   da: {
-    title: "Easy2Eat Finder",
+    title: "Easy2Eat PizzaMap",
     intro:
       "Find pizzerier der kører på Easy2Eat. Søg en by, eller brug din position. Tryk Åbn / bestil for at gå direkte til hjemmesiden.",
     search: "Søg by eller navn, f.eks. Aalborg",
@@ -23,7 +23,7 @@ const I18N = {
     ny: "NY",
   },
   en: {
-    title: "Easy2Eat Finder",
+    title: "Easy2Eat PizzaMap",
     intro:
       "Find restaurants running on Easy2Eat. Search a town or use your location. Tap Open / order to go to the website.",
     search: "Search town or name, e.g. Aalborg",
@@ -46,7 +46,7 @@ const I18N = {
     ny: "NEW",
   },
   de: {
-    title: "Easy2Eat Finder",
+    title: "Easy2Eat PizzaMap",
     intro:
       "Finde Restaurants, die Easy2Eat nutzen. Suche eine Stadt oder nutze deinen Standort. Öffnen / bestellen führt zur Website.",
     search: "Stadt oder Name suchen, z. B. Aalborg",
